@@ -4,13 +4,10 @@
 
 ## Usage
 
-注意：所有参数配置均在gradle.properties文件中
+注意：所有参数配置均在gradle.properties文件中</br>
           输入源apk与keystore默认放置在工程根目录，使用相对路径获取（../）
 
 1. gradle modifyPackagePath </br></br>
-    PACKAGE_PATH 指原来壳项目包路径(app模块)</br>
-    APPLICATION_ID 指修改后目标路径</br>
-
     如果手动修改壳项目包路径，请同时修改以下内容：</br>
         - 修改jni中包路径对应字符串（.cpp .h）</br>
         - 修改lib模块中JiaGu.java中变量PROXY_APPLICATION_NAME的值</br></br>
@@ -26,5 +23,5 @@
     加固apk</br></br>
 
 
-总结：
+总结：</br></br>
      组合命令：gradle modifyPackagePath clean build zipToShell zipToApk
