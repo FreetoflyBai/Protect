@@ -1,0 +1,1 @@
+gradle modifyPackagePath clean build zipToShell zipToApk

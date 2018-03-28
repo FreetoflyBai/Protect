@@ -1,0 +1,149 @@
+//修改包路径
+//复制两次为防止文件目录重名删除bug
+task modifyPackagePath(type: Copy) {
+    def oldPath = 'src/main/java/'+PACKAGE_PATH.replace(".","/")
+    def tempPath= "src/main/java/temp/" + APPLICATION_ID.replace(".", "/")
+    def newPath = "src/main/java/" + APPLICATION_ID.replace(".", "/")
+    println("oldPath==" + oldPath)
+    println("tempPath==" + tempPath)
+    from oldPath
+    into tempPath
+    // 复制过程中添加过滤规则
+    // filter()方法有两种形式：一种是接受closur代码段，一种是接受class类
+    filter { String line ->
+        if (line.find(PACKAGE_PATH)) {
+            //替换字符串
+            line = line.replace(PACKAGE_PATH, APPLICATION_ID)
+        }
+        "$line"
+    }
+
+    //删除原目录
+    doLast {
+        println("删除原目录")
+        def fullPath = rootDir.getAbsolutePath() + "/app/" + "src/main/java/"+PACKAGE_PATH.substring(0,PACKAGE_PATH.indexOf("."))
+        println("deletePath==" + fullPath)
+        File file1 = new File(fullPath)
+        file1.deleteDir()
+    }
+
+    //从缓存目录拷贝到最终目录
+    from tempPath
+    into newPath
+
+    doLast{
+        println("删除缓存目录")
+        def fullTempPath = rootDir.getAbsolutePath() + "/app/" + "src/main/java/temp"
+        println("deletePath==" + fullTempPath)
+        File file2 = new File(fullTempPath)
+        file2.deleteDir()
+    }
+
+    //替换资源文件中与包路径相关的字符串
+    doLast{
+        replaceManifest(PACKAGE_PATH, APPLICATION_ID)
+        replaceProguardFile(PACKAGE_PATH,APPLICATION_ID)
+        replaceCFile(PACKAGE_PATH, APPLICATION_ID)
+        replaceLib(PACKAGE_PATH, APPLICATION_ID)
+    }
+}
+
+def replaceManifest(String oldName, String newName) {
+
+    File scanPath = new File(rootDir.getAbsolutePath() + "/app/src/main/")
+    String manifestPath = new File(rootDir.getAbsolutePath() + "/app/src/main/AndroidManifest.xml").getAbsolutePath()
+    String fileName = "AndroidManifest.xml"
+
+    // 执行扫描替换资源文件
+    readFile(oldName, newName, scanPath, manifestPath, fileName, 0)
+}
+
+def replaceProguardFile(String oldName,String newName){
+    File scanPath = new File(rootDir.getAbsolutePath() + "/app/")
+    String proguardFile = new File(rootDir.getAbsolutePath() + "/app/proguard-rules.pro").getAbsolutePath()
+    String fileName = "proguard-rules.pro"
+
+    // 执行扫描替换资源文件
+    readFile(oldName, newName, scanPath, proguardFile, fileName, 0)
+}
+
+def replaceCFile(String oldName, String newName) {
+    // 定义C文件目录
+    File scanPath = new File(rootDir.getAbsolutePath() + "/app/src/main/jni/")
+    String cFileName = "AES.cpp"
+    // 拿到C文件的绝对路径
+    String cFilePath = new File(scanPath.getAbsolutePath() + "/AES.cpp").getAbsolutePath()
+    println("cFile 路径" + cFilePath)
+    oldName = oldName.replace(".", "/")
+    newName = newName.replace(".", "/")
+    println("执行替换C文件，oldName is==" + oldName + "--newName is==" + newName)
+    readFile(oldName, newName, scanPath, cFilePath, cFileName, 0)
+
+    oldName = oldName.replace("/","_")
+    newName = newName.replace("/", "_")
+    readFile(oldName, newName, scanPath, cFilePath, cFileName, 0)
+
+    replaceHFile(oldName,newName)
+}
+
+def replaceHFile(String oldName, String newName) {
+    // 定义C文件目录
+    File scanPath = new File(rootDir.getAbsolutePath() + "/app/src/main/jni/")
+    String cFileName = "AES.h"
+    // 拿到C文件的绝对路径
+    String cFilePath = new File(scanPath.getAbsolutePath() + "/AES.h").getAbsolutePath()
+    println("cFile 路径" + cFilePath)
+    oldName = oldName.replace(".", "/")
+    newName = newName.replace(".", "/")
+    println("执行替换C文件，oldName is==" + oldName + "--newName is==" + newName)
+    readFile(oldName, newName, scanPath, cFilePath, cFileName, 0)
+
+    oldName = oldName.replace("/","_")
+    newName = newName.replace("/", "_")
+    readFile(oldName, newName, scanPath, cFilePath, cFileName, 0)
+}
+
+def replaceLib(String oldName, String newName) {
+    File scanPath = new File(rootDir.getAbsolutePath() + "/lib/src/main/java/com/library/dexknife/shell/jiagu/")
+    String fileName = "JiaGu.java"
+    String filePath = new File(scanPath.getAbsolutePath() + "/JiaGu.java").getAbsolutePath()
+    readFile(oldName, newName, scanPath, filePath, fileName, 0)
+}
+
+
+
+def readFile(String oldName, String newName, File scanPath, String absolutePath, String fileName, int index) {
+    println("开始读文件")
+    try {
+        BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath), "UTF-8"))
+        // 数据流读取文件
+
+        StringBuffer strBuffer = new StringBuffer()
+        String oldStr = oldName
+        String newStr = newName
+
+        for (String temp = null; (temp = bufReader.readLine()) != null; temp = null) {
+
+            if ((temp.indexOf(oldStr) != -1) && (temp.indexOf(oldStr) != -1)) { // 判断当前行是否存在想要替换掉的字符
+                println "执行替换，temp is" + temp
+                temp = temp.replace(oldStr, newStr) // 此处进行替换
+            }
+
+            strBuffer.append(temp)
+            strBuffer.append(System.getProperty("line.separator")) // 换行符
+        }
+
+        bufReader.close()
+        PrintWriter printWriter = new PrintWriter(scanPath.absolutePath + "/" + fileName, "UTF-8")
+        // 替换后输出文件路径
+        printWriter.write(strBuffer.toString().toCharArray()) //重新写入
+        printWriter.flush()
+        printWriter.close()
+        println("第 " + (index + 1) + " 个文件   " + "  已成功输出到" + scanPath.absolutePath + "/" + fileName)
+
+    } catch (Exception e) {
+        e.printStackTrace()
+    }
+}
+
+

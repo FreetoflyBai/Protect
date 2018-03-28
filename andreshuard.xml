@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resproguard>
+    <issue id="property">
+        <!--whether use 7zip to repackage the signed apk, you must install the 7z command line version in window -->
+        <!--sudo apt-get install p7zip-full in linux -->
+        <!--and you must write the sign data fist, and i found that if we use linux, we can get a better result -->
+        <seventzip value="false"/>
+        <!--the sign data file name in your apk, default must be META-INF-->
+        <!--generally, you do not need to change it if you dont change the meta file name in your apk-->
+        <metaname value="META-INF"/>
+        <!--if keep root, res/drawable will be kept, it won't be changed to such as r/s-->
+        <keeproot value="false"/>
+    </issue>
+
+    <issue id="whitelist" isactive="true">
+        <!--原始代码包名部分不能使用正则表达式，这里使用*特殊处理，在ARSCDecoder.java 类中写死处理-->
+        <!--通用-->
+        <path value="*.R.mipmap.ic_launcher" />
+        <path value="*.R.drawable.ic_launcher"/>
+        <path value="*.R.string.app_name" />
+        <path value="*.R.style.*" />
+    </issue>
+
+    <!--此处代码屏蔽，在Configuration类有开关配置,可动态指定文件位置-->
+    <!--<issue id="keepmapping" isactive="true">-->
+        <!--<path value="./resource_mapping.txt"></path>-->
+    <!--</issue>-->
+
+    <issue id="compress" isactive="true">
+        <!--you must use / separation, and it support *, ?, such as *.png, *.jpg, res/drawable-hdpi/welcome_?.png-->
+        <path value="*.png"/>
+        <path value="*.jpg"/>
+        <path value="*.jpeg"/>
+        <path value="*.gif"/>
+        <path value="resources.arsc"/>
+    </issue>
+</resproguard>
+
