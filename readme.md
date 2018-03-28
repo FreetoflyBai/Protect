@@ -22,5 +22,5 @@
 4. gradle zipToApk</br>
     加固apk</br></br>
 
-组合命令：</br>
+组合命令：</br></br>
     gradle modifyPackagePath clean build zipToShell zipToApk
