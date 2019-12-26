@@ -1,6 +1,6 @@
 ## 使用步骤
 
-### 注意：所有参数配置均在gradle.properties文件中，配置完成再执行以下步骤</br>
+### 注意：所有参数配置均在gradle.properties文件中，配置完成再执行以下步骤</br></br>
 
 第一步：
     gradle modifyPackagePath </br></br>
@@ -23,4 +23,5 @@
     加固apk</br></br>
 
 ### 以上为分步执行，也可以直接执行以下组合命令：</br></br>
+
     gradle modifyPackagePath clean build zipToShell zipToApk
