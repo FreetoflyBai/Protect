@@ -1,10 +1,6 @@
-# APK Protected
+## 使用步骤
 
-   This is a library of encrypt apk . Include encrypt dex、proguard resource、signature verification
-
-## Usage
-
-所有参数配置均在gradle.properties文件中</br>
+注意：所有参数配置均在gradle.properties文件中，配置完成再执行以下步骤</br>
 
 1. gradle modifyPackagePath </br>
     如果不需要修改壳部分代码，可省略此步骤</br>
@@ -22,5 +18,5 @@
 4. gradle zipToApk</br>
     加固apk</br></br>
 
-组合命令：</br></br>
+以上为分步执行，也可以直接执行以下组合命令：</br></br>
     gradle modifyPackagePath clean build zipToShell zipToApk
