@@ -1,7 +1,7 @@
 ## 使用步骤
 
 #### 1：配置参数
-    所有参数配置均在gradle.properties文件中，配置完成再执行以下步骤</br></br>
+    所有参数配置均在gradle.properties文件中，配置完成再执行以下步骤
 
 #### 2：修改壳路径
     命令行 gradle modifyPackagePath </br></br>
@@ -21,7 +21,3 @@
 
 #### 4：加固apk
     命令行 gradle zipToApk</br></br>
-
-### 以上为分步执行，也可以直接执行以下组合命令：</br></br>
-
-    gradle modifyPackagePath clean build zipToShell zipToApk
